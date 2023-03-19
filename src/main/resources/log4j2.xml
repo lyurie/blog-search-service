@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+  <Appenders>
+    <!-- Console Log -->
+    <Async name="AsyncConsoleLog"
+           bufferSize="512"
+           blocking="false"
+           shutdownTimeout="150">
+      <AppenderRef ref="LoggingToConsole"/>
+    </Async>
+    <Console name="LoggingToConsole"
+             direct="true"
+             target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5level} [%yellow{%c{1.}.%method:%line}] %msg%n"/>
+    </Console>
+
+
+    <!-- Trace Log -->
+    <RollingFile name="TraceLogToRollingFile"
+                 append="true"
+                 bufferSize="8192"
+                 fileName="./logs/trace.log"
+                 filePattern="./logs/trace-%d{yyyyMMdd}.log">
+      <PatternLayout>
+        <Pattern>%m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+    </RollingFile>
+    <Async name="AsyncTraceLog"
+           bufferSize="32768"
+           blocking="false"
+           shutdownTimeout="800">
+      <AppenderRef ref="TraceLogToRollingFile"/>
+    </Async>
+
+    <!-- App Log -->
+    <RollingFile name="AppLogToRollingFile"
+                 append="true"
+                 bufferSize="8192"
+                 fileName="./logs/app.log"
+                 filePattern="./logs/app-%d{yyyyMMdd}.log">
+      <JsonLayout compact="true" eventEol="true" stacktraceAsString="true" includeTimeMillis="true">
+        <KeyValuePair key="dt" value="$${date:yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}"/>
+      </JsonLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+    </RollingFile>
+    <Async name="AsyncAppLog"
+           bufferSize="32768"
+           blocking="false"
+           shutdownTimeout="800">
+      <AppenderRef ref="AppLogToRollingFile"/>
+    </Async>
+
+    <!-- App Error Log -->
+    <RollingFile name="AppErrorLogToRollingFile"
+                 append="true"
+                 bufferSize="8192"
+                 fileName="./logs/app-errorCode.log"
+                 filePattern="./logs/app-errorCode-%d{yyyyMMdd}.log">
+      <JsonLayout compact="true" eventEol="true" stacktraceAsString="true" includeTimeMillis="true">
+        <KeyValuePair key="dt" value="$${date:yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}"/>
+      </JsonLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+    </RollingFile>
+    <Async name="AsyncErrorAppLog"
+           bufferSize="32768"
+           blocking="false"
+           shutdownTimeout="800">
+      <AppenderRef ref="AppErrorLogToRollingFile"/>
+    </Async>
+
+  </Appenders>
+
+  <Loggers>
+    <!-- Trace Log -->
+    <logger name="TraceLogger" level="INFO" additivity="false">
+      <AppenderRef ref="AsyncTraceLog"/>
+    </logger>
+
+    <!-- App Log -->
+    <logger name="AppLogger" level="INFO" additivity="false">
+      <AppenderRef ref="AsyncAppLog"/>
+    </logger>
+
+    <Root level="INFO">
+      <AppenderRef ref="AsyncConsoleLog"/>
+      <AppenderRef ref="AsyncAppLog"/>
+      <AppenderRef level="WARN" ref="AsyncErrorAppLog"/>
+    </Root>
+  </Loggers>
+
+</Configuration>

@@ -1,0 +1,31 @@
+server:
+  port: 80
+logging:
+  config: classpath:log4j2.xml
+spring:
+  profiles:
+    active: local
+  application:
+    name: sample-api
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:keyword-count
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+feign:
+
+
+
