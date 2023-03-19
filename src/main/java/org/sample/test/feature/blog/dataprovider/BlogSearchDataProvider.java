@@ -36,12 +36,12 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
 
     @Override
     public BlogDocuments searchFromNaverWithNoFallback(String query, String sort, int page, int size) {
-        final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, "sim");
+        final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, sort.equals("accuracy") ? "sim" : "date");
         return toBlogDocument(page, size, response);
     }
 
     public BlogDocuments searchFromKakaoFallback(String query, String sort, int page, int size, Throwable t) {
-        final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, "sim");
+        final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, sort.equals("accuracy") ? "sim" : "date");
         return toBlogDocument(page, size, response);
     }
 
