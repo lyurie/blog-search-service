@@ -1,1 +1,1 @@
-INSERT INTO SEARCH_KEYWORD_COUNT VALUES ('java', 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count) values ('kakao', 1);
