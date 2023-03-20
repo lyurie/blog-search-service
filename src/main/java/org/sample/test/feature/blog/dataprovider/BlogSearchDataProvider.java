@@ -2,14 +2,23 @@ package org.sample.test.feature.blog.dataprovider;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
-import org.sample.test.feature.blog.usecase.IBlogSearchDataProvider;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
+import org.sample.test.configuration.mapstuct.MapstructMapperConfig;
 import org.sample.test.feature.blog.domain.BlogDocumentsDomain;
+import org.sample.test.feature.blog.usecase.IBlogSearchDataProvider;
+import org.sample.test.feature.keyword.dataprovider.SearchKeywordDataProvider;
+import org.sample.test.feature.keyword.domain.SearchKeywordCountDomain;
+import org.sample.test.repository.h2.BlogSearchKeywordCountRepository;
+import org.sample.test.repository.h2.entity.BlogSearchKeywordCountEntity;
 import org.sample.test.repository.network.kakao.KakaoRestAPIRepository;
 import org.sample.test.repository.network.kakao.domain.KakaoSearchBlogResponse;
 import org.sample.test.repository.network.naver.NaverRestAPIRepository;
 import org.sample.test.repository.network.naver.domain.NaverSearchBlogResponse;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +28,8 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
 
     private final KakaoRestAPIRepository kakaoRestAPIRepository;
     private final NaverRestAPIRepository naverRestAPIRepository;
+
+    private final BlogSearchKeywordCountRepository blogSearchKeywordCountRepository;
 
     @Override
     public BlogDocumentsDomain searchFromKakaoWithNoFallback(String query, String sort, int page, int size) {
@@ -42,6 +53,22 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
     public BlogDocumentsDomain searchFromKakaoFallback(String query, String sort, int page, int size, Throwable t) {
         final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, sort.equals("accuracy") ? "sim" : "date");
         return toBlogDocument(page, size, response);
+    }
+
+    @Transactional
+    @Override
+    public void incrSearchKeywordCount(String searchKeyword) {
+        BlogSearchKeywordCountEntity entity = blogSearchKeywordCountRepository.findBySearchKeyword(searchKeyword);
+
+        if (entity != null) {
+            entity.setSearchCount(entity.getSearchCount() + 1);
+        } else {
+            entity = new BlogSearchKeywordCountEntity();
+            entity.setSearchKeyword(searchKeyword);
+            entity.setSearchCount(1);
+        }
+
+        blogSearchKeywordCountRepository.save(entity);
     }
 
 
@@ -83,6 +110,14 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
                 .size(size)
                 .documents(documents)
                 .build();
+    }
+
+    @Mapper(config = MapstructMapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+    public interface DomainMapper {
+        SearchKeywordDataProvider.DomainMapper MAPPER = Mappers.getMapper(SearchKeywordDataProvider.DomainMapper.class);
+
+        SearchKeywordCountDomain toDomain(BlogSearchKeywordCountEntity entity);
+        List<SearchKeywordCountDomain> toDomainList(List<BlogSearchKeywordCountEntity> entities);
     }
 
     /*

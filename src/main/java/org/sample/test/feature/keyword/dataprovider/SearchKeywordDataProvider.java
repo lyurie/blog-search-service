@@ -13,8 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -41,6 +41,7 @@ public class SearchKeywordDataProvider implements ISearchKeywordDataProvider {
     return DomainMapper.MAPPER.toDomainList(entities);
   }
 
+  @Transactional
   @Override
   public SearchKeywordCountDomain incrSearchKeywordCount(String searchKeyword) {
     BlogSearchKeywordCountEntity entity = blogSearchKeywordCountRepository.findBySearchKeyword(searchKeyword);

@@ -22,11 +22,16 @@ public class BlogSearchUseCase implements BlogSearchInputBoundary {
 
     @Override
     public BlogSearchResponse execute(BlogSearchRequest request) {
+        // 1. validate request
         final String query = request.getQuery();
         if(!StringUtils.hasLength(query)) {
             throw new BusinessException(ErrorCode.INVALID_REQUEST, "query is required");
         }
 
+        // 2. increase search keyword count
+        blogSearchDataProvider.incrSearchKeywordCount(query);
+
+        // 3. search blog results
         final BlogDocumentsDomain blogDocumentsDomain;
         switch (request.getTarget()) {
             case SEARCH_TARGET_KAKAO -> blogDocumentsDomain = blogSearchDataProvider.searchFromKakaoWithNoFallback(
@@ -49,8 +54,8 @@ public class BlogSearchUseCase implements BlogSearchInputBoundary {
             );
         }
 
+        // 4. make results
         final BlogSearchResponse blogSearchResponse = toBlogSearchResponse(blogDocumentsDomain);
-
         return outputBoundary.getPresent(blogSearchResponse);
     }
 
