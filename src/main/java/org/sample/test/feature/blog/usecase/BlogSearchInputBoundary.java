@@ -2,6 +2,6 @@ package org.sample.test.feature.blog.usecase;
 
 public interface BlogSearchInputBoundary {
 
-    BlogSearchResponse search(BlogSearchRequest request);
+    BlogSearchResponse execute(final BlogSearchRequest request);
 
 }

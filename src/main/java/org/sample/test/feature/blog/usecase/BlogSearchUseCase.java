@@ -3,7 +3,7 @@ package org.sample.test.feature.blog.usecase;
 import lombok.RequiredArgsConstructor;
 import org.sample.test.assets.enums.ErrorCode;
 import org.sample.test.assets.exception.BusinessException;
-import org.sample.test.feature.blog.usecase.domain.BlogDocuments;
+import org.sample.test.feature.blog.domain.BlogDocumentsDomain;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -21,27 +21,27 @@ public class BlogSearchUseCase implements BlogSearchInputBoundary {
     private final IBlogSearchDataProvider blogSearchDataProvider;
 
     @Override
-    public BlogSearchResponse search(BlogSearchRequest request) {
+    public BlogSearchResponse execute(BlogSearchRequest request) {
         final String query = request.getQuery();
         if(!StringUtils.hasLength(query)) {
             throw new BusinessException(ErrorCode.INVALID_REQUEST, "query is required");
         }
 
-        final BlogDocuments blogDocuments;
+        final BlogDocumentsDomain blogDocumentsDomain;
         switch (request.getTarget()) {
-            case SEARCH_TARGET_KAKAO -> blogDocuments = blogSearchDataProvider.searchFromKakaoWithNoFallback(
+            case SEARCH_TARGET_KAKAO -> blogDocumentsDomain = blogSearchDataProvider.searchFromKakaoWithNoFallback(
                     query,
                     request.getSort(),
                     request.getPage(),
                     request.getSize()
             );
-            case SEARCH_TARGET_NAVER -> blogDocuments = blogSearchDataProvider.searchFromNaverWithNoFallback(
+            case SEARCH_TARGET_NAVER -> blogDocumentsDomain = blogSearchDataProvider.searchFromNaverWithNoFallback(
                     query,
                     request.getSort(),
                     request.getPage(),
                     request.getSize()
             );
-            default -> blogDocuments = blogSearchDataProvider.searchFromKakaoWithFallback(
+            default -> blogDocumentsDomain = blogSearchDataProvider.searchFromKakaoWithFallback(
                     query,
                     request.getSort(),
                     request.getPage(),
@@ -49,14 +49,14 @@ public class BlogSearchUseCase implements BlogSearchInputBoundary {
             );
         }
 
-        final BlogSearchResponse blogSearchResponse = toBlogSearchResponse(blogDocuments);
+        final BlogSearchResponse blogSearchResponse = toBlogSearchResponse(blogDocumentsDomain);
 
         return outputBoundary.getPresent(blogSearchResponse);
     }
 
-    private BlogSearchResponse toBlogSearchResponse(BlogDocuments blogDocuments) {
+    private BlogSearchResponse toBlogSearchResponse(BlogDocumentsDomain blogDocumentsDomain) {
         List<BlogSearchResponse.Document> documents = new ArrayList<>();
-        for (BlogDocuments.Document blogDocument : blogDocuments.getDocuments()) {
+        for (BlogDocumentsDomain.Document blogDocument : blogDocumentsDomain.getDocuments()) {
             BlogSearchResponse.Document document = new BlogSearchResponse.Document();
             document.setTitle(blogDocument.getTitle());
             document.setLink(blogDocument.getLink());
@@ -68,9 +68,9 @@ public class BlogSearchUseCase implements BlogSearchInputBoundary {
         }
 
         return BlogSearchResponse.builder()
-                .total(blogDocuments.getTotal())
-                .page(blogDocuments.getPage())
-                .size(blogDocuments.getSize())
+                .total(blogDocumentsDomain.getTotal())
+                .page(blogDocumentsDomain.getPage())
+                .size(blogDocumentsDomain.getSize())
                 .documents(documents)
                 .build();
     }

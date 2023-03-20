@@ -1,1 +1,11 @@
-insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count) values ('kakao', 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-1', 1, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-2', 2, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-3', 3, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-4', 4, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-5', 5, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-6', 6, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-7', 7, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-8', 8, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-9', 9, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-10', 10, 1);
+insert into BLOG_SEARCH_KEYWORD_COUNT(search_keyword, search_count, version) values ('keyword-11', 11, 1);

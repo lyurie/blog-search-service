@@ -32,7 +32,7 @@ public class BlogSearchController {
                 .target(target.orElse(""))
                 .build();
 
-        return new ResponseEntity<>(blogSearchInputBoundary.search(request), HttpStatus.OK);
+        return new ResponseEntity<>(blogSearchInputBoundary.execute(request), HttpStatus.OK);
     }
 
 }

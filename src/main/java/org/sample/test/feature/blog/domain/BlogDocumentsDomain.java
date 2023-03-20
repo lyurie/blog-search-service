@@ -1,4 +1,4 @@
-package org.sample.test.feature.blog.usecase.domain;
+package org.sample.test.feature.blog.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class BlogDocuments {
+public class BlogDocumentsDomain {
 
     private Integer total;
 

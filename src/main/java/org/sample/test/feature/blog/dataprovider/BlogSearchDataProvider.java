@@ -2,9 +2,8 @@ package org.sample.test.feature.blog.dataprovider;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
-import org.sample.test.feature.blog.usecase.BlogSearchRequest;
 import org.sample.test.feature.blog.usecase.IBlogSearchDataProvider;
-import org.sample.test.feature.blog.usecase.domain.BlogDocuments;
+import org.sample.test.feature.blog.domain.BlogDocumentsDomain;
 import org.sample.test.repository.network.kakao.KakaoRestAPIRepository;
 import org.sample.test.repository.network.kakao.domain.KakaoSearchBlogResponse;
 import org.sample.test.repository.network.naver.NaverRestAPIRepository;
@@ -22,34 +21,34 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
     private final NaverRestAPIRepository naverRestAPIRepository;
 
     @Override
-    public BlogDocuments searchFromKakaoWithNoFallback(String query, String sort, int page, int size) {
+    public BlogDocumentsDomain searchFromKakaoWithNoFallback(String query, String sort, int page, int size) {
         final KakaoSearchBlogResponse response = kakaoRestAPIRepository.searchBlog(query, sort, page, size);
         return toBlogDocument(page, size, response);
     }
 
     @CircuitBreaker(name = "searchBlog", fallbackMethod = "searchFromKakaoFallback")
     @Override
-    public BlogDocuments searchFromKakaoWithFallback(String query, String sort, int page, int size) {
+    public BlogDocumentsDomain searchFromKakaoWithFallback(String query, String sort, int page, int size) {
         final KakaoSearchBlogResponse response = kakaoRestAPIRepository.searchBlog(query, sort, page, size);
         return toBlogDocument(page, size, response);
     }
 
     @Override
-    public BlogDocuments searchFromNaverWithNoFallback(String query, String sort, int page, int size) {
+    public BlogDocumentsDomain searchFromNaverWithNoFallback(String query, String sort, int page, int size) {
         final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, sort.equals("accuracy") ? "sim" : "date");
         return toBlogDocument(page, size, response);
     }
 
-    public BlogDocuments searchFromKakaoFallback(String query, String sort, int page, int size, Throwable t) {
+    public BlogDocumentsDomain searchFromKakaoFallback(String query, String sort, int page, int size, Throwable t) {
         final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, sort.equals("accuracy") ? "sim" : "date");
         return toBlogDocument(page, size, response);
     }
 
 
-    private BlogDocuments toBlogDocument(int page, int size, KakaoSearchBlogResponse response) {
-        List<BlogDocuments.Document> documents = new ArrayList<>();
+    private BlogDocumentsDomain toBlogDocument(int page, int size, KakaoSearchBlogResponse response) {
+        List<BlogDocumentsDomain.Document> documents = new ArrayList<>();
         for (KakaoSearchBlogResponse.Document responseDocument : response.getDocuments()) {
-            BlogDocuments.Document document = new BlogDocuments.Document();
+            BlogDocumentsDomain.Document document = new BlogDocumentsDomain.Document();
             document.setTitle(responseDocument.getTitle());
             document.setLink(responseDocument.getUrl());
             document.setDescription(responseDocument.getContents());
@@ -58,7 +57,7 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
             documents.add(document);
         }
 
-        return BlogDocuments.builder()
+        return BlogDocumentsDomain.builder()
                 .total(response.getMeta().getTotalCount())
                 .page(page)
                 .size(size)
@@ -66,10 +65,10 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
                 .build();
     }
 
-    private BlogDocuments toBlogDocument(int page, int size, NaverSearchBlogResponse response) {
-        List<BlogDocuments.Document> documents = new ArrayList<>();
+    private BlogDocumentsDomain toBlogDocument(int page, int size, NaverSearchBlogResponse response) {
+        List<BlogDocumentsDomain.Document> documents = new ArrayList<>();
         for (NaverSearchBlogResponse.Item item : response.getItems()) {
-            BlogDocuments.Document document = new BlogDocuments.Document();
+            BlogDocumentsDomain.Document document = new BlogDocumentsDomain.Document();
             document.setTitle(item.getTitle());
             document.setLink(item.getLink());
             document.setDescription(item.getDescription());
@@ -78,7 +77,7 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
             documents.add(document);
         }
 
-        return BlogDocuments.builder()
+        return BlogDocumentsDomain.builder()
                 .total(response.getTotal())
                 .page(page)
                 .size(size)

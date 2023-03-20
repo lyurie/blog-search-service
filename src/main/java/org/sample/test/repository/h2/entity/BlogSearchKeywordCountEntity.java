@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Data
 @Table(name = "BLOG_SEARCH_KEYWORD_COUNT")
 @Entity
-public class BlogSearchKeywordCount {
+public class BlogSearchKeywordCountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,6 +16,9 @@ public class BlogSearchKeywordCount {
     private String searchKeyword;
 
     @Column(nullable = false)
-    private int searchCount;
+    private Integer searchCount;
+
+    @Version
+    private Long version;
 
 }
