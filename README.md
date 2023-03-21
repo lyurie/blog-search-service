@@ -114,15 +114,15 @@ Content-Type: application/json
 
 | name     | type     | description                  |
 | -------- |----------|------------------------------|
-| total | integer | 총 조회된 블로그 개수 |
+| total | integer | 총 검색 결과 개수 |
 | page | integer | 결과 페이지 |
-| size | integer | 한 페이지에 보여질 문서 수|
+| size | integer | 한 페이지에 보여질 결과 수|
 | documents[] | array | 블로그 검색 결과 리스트|
 | documents[].title | string | 블로그 글 제목|
 | documents[].link | string | 블로그 글 URL|
 | documents[].description | string | 블로그 글 요약|
 | documents[].blog_name | string | 블로그의 이름|
-| documents[].post_date | string | 블로그 글 작성 시간|
+| documents[].post_date | datetime | 블로그 글 작성 시간 yyyyMMdd|
 
 [2] 인기 검색어 조회 API - GET /top-n-search-keywords
 * CURL example
