@@ -1,5 +1,10 @@
 `블로그 검색 서비스`를 위한 Server Application
 
+* [Getting started](#getting-started)
+* [API Specification](#api-specification)
+* [Used Open Source Library](#used-open-source-library)
+
+
 ### Getting started
 
 사전 설치가 필요한 항목
@@ -195,7 +200,7 @@ Content-Type: application/json
 | [].search_count | integer | 검색 카운트|
 
 
-### 사용한 외부 라이브러리 및 오픈 소스
+### Used Open Source Library
 
 | 라이브러리 | 용도                                                                                                             |
 | -------- |----------------------------------------------------------------------------------------------------------------|
