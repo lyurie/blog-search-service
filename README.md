@@ -137,16 +137,52 @@ curl 'http://localhost/top-n-search-keywords' -i -X GET
 
 * Response HTTP Example
 ```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
 [
     {
-        "searchKeyword": "keyword-11",
-        "searchCount": 11
+        "search_keyword": "keyword-11",
+        "search_count": 11
     },
     {
-        "searchKeyword": "keyword-10",
-        "searchCount": 10
+        "search_keyword": "keyword-10",
+        "search_count": 10
+    },
+    {
+        "search_keyword": "keyword-9",
+        "search_count": 9
+    },
+    {
+        "search_keyword": "keyword-8",
+        "search_count": 8
+    },
+    {
+        "search_keyword": "keyword-7",
+        "search_count": 7
+    },
+    {
+        "search_keyword": "keyword-6",
+        "search_count": 6
+    },
+    {
+        "search_keyword": "keyword-5",
+        "search_count": 5
+    },
+    {
+        "search_keyword": "keyword-4",
+        "search_count": 4
+    },
+    {
+        "search_keyword": "keyword-3",
+        "search_count": 3
+    },
+    {
+        "search_keyword": "keyword-2",
+        "search_count": 2
     }
 ]
+
 
 ```
 
