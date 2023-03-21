@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "naverRestAPIClient", url = "https://openapi.naver.com", configuration = NaverRestAPIHttpConfig.class)
+@FeignClient(name = "naverRestAPIClient", url = "${external.rest-api.naver.url}", configuration = NaverRestAPIHttpConfig.class)
 public interface NaverRestAPIRepository {
 
     @GetMapping("/v1/search/blog.json")

@@ -32,13 +32,47 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
 logging:
   level:
     org.hibernate.sql: debug
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 2000
+        readTimeout: 5000
+
 external:
   rest-api:
     kakao:
+      url: https://dapi.kakao.com
       authorization: KakaoAK 0754d4ffa3d9a240b379fe1a1307a679
     naver:
+      url: https://openapi.naver.com
       client-id: ITUaf4f6C5Q_s5sR10PQ
       client-secret: gQtx9c66Qg
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: TIME_BASED
+        slidingWindowSize: 100
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+        recordExceptions:
+#          - feign.RetryableException
+          - feign.FeignException
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException
+        ignoreExceptions:
+          - org.sample.test.assets.exception.BusinessException
+    instances:
+      searchFromKakao:
+        baseConfig: default

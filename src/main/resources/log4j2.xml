@@ -91,7 +91,7 @@
       <AppenderRef ref="AsyncAppLog"/>
     </logger>
 
-    <Root level="DEBUG">
+    <Root level="INFO">
       <AppenderRef ref="AsyncConsoleLog"/>
       <AppenderRef ref="AsyncAppLog"/>
       <AppenderRef level="WARN" ref="AsyncErrorAppLog"/>

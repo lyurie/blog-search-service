@@ -2,6 +2,7 @@ package org.sample.test.feature.blog.dataprovider;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 import org.sample.test.configuration.mapstuct.MapstructMapperConfig;
 import org.sample.test.feature.blog.domain.BlogDocumentsDomain;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class BlogSearchDataProvider implements IBlogSearchDataProvider {
@@ -63,6 +65,7 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
     }
 
     public BlogDocumentsDomain searchFromKakaoFallback(String query, String sort, int page, int size, Throwable t) {
+//        log.warn("searchFromKakaoFallback method executed for query : {}", query);
         return searchFromNaverWithNoFallback(query, sort, page, size);
     }
 

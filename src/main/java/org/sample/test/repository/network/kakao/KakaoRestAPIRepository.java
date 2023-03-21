@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "kakaoRestAPIClient", url = "https://dapi.kakao.com", configuration = KakaoRestAPIHttpConfig.class )
+@FeignClient(name = "kakaoRestAPIClient", url = "${external.rest-api.kakao.url}", configuration = KakaoRestAPIHttpConfig.class )
 public interface KakaoRestAPIRepository {
 
     @GetMapping("/v2/search/blog")
