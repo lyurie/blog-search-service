@@ -1,4 +1,4 @@
-package org.sample.test.feature.keyword.domain;
+package org.sample.test.feature.search.keyword.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SearchKeywordCountDomain {
 
-  private String searchKeyword;
+    private String searchKeyword;
 
-  private int searchCount;
+    private int searchCount;
 
 }

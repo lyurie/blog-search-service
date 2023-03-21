@@ -2,16 +2,12 @@ package org.sample.test.feature.blog.dataprovider;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.*;
 import org.sample.test.configuration.mapstuct.MapstructMapperConfig;
 import org.sample.test.feature.blog.domain.BlogDocumentsDomain;
 import org.sample.test.feature.blog.usecase.IBlogSearchDataProvider;
-import org.sample.test.feature.keyword.dataprovider.SearchKeywordDataProvider;
-import org.sample.test.feature.keyword.domain.SearchKeywordCountDomain;
-import org.sample.test.repository.h2.BlogSearchKeywordCountRepository;
-import org.sample.test.repository.h2.entity.BlogSearchKeywordCountEntity;
+import org.sample.test.repository.h2.SearchKeywordCountRepository;
+import org.sample.test.repository.h2.entity.SearchKeywordCountEntity;
 import org.sample.test.repository.network.kakao.KakaoRestAPIRepository;
 import org.sample.test.repository.network.kakao.domain.KakaoSearchBlogResponse;
 import org.sample.test.repository.network.naver.NaverRestAPIRepository;
@@ -19,136 +15,108 @@ import org.sample.test.repository.network.naver.domain.NaverSearchBlogResponse;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component
 public class BlogSearchDataProvider implements IBlogSearchDataProvider {
 
+    private final SearchKeywordCountRepository searchKeywordCountRepository;
+
     private final KakaoRestAPIRepository kakaoRestAPIRepository;
     private final NaverRestAPIRepository naverRestAPIRepository;
 
-    private final BlogSearchKeywordCountRepository blogSearchKeywordCountRepository;
+    private final KakaoResponseMapper kakaoResponseMapper;
+    private final NaverResponseMapper naverResponseMapper;
+
+    @Transactional
+    @Override
+    public void incrSearchKeywordCount(String searchKeyword) {
+        SearchKeywordCountEntity entity = searchKeywordCountRepository.findBySearchKeyword(searchKeyword);
+
+        if (entity != null) {
+            entity.setSearchCount(entity.getSearchCount() + 1);
+        } else {
+            entity = new SearchKeywordCountEntity();
+            entity.setSearchKeyword(searchKeyword);
+            entity.setSearchCount(1);
+        }
+
+        searchKeywordCountRepository.save(entity);
+    }
 
     @Override
     public BlogDocumentsDomain searchFromKakaoWithNoFallback(String query, String sort, int page, int size) {
         final KakaoSearchBlogResponse response = kakaoRestAPIRepository.searchBlog(query, sort, page, size);
-        return toBlogDocument(page, size, response);
+        return kakaoResponseMapper.toDomain(response, page, size);
     }
 
-    @CircuitBreaker(name = "searchBlog", fallbackMethod = "searchFromKakaoFallback")
+    @CircuitBreaker(name = "searchFromKakao", fallbackMethod = "searchFromKakaoFallback")
     @Override
     public BlogDocumentsDomain searchFromKakaoWithFallback(String query, String sort, int page, int size) {
-        final KakaoSearchBlogResponse response = kakaoRestAPIRepository.searchBlog(query, sort, page, size);
-        return toBlogDocument(page, size, response);
+        return searchFromKakaoWithNoFallback(query, sort, page, size);
     }
 
     @Override
     public BlogDocumentsDomain searchFromNaverWithNoFallback(String query, String sort, int page, int size) {
         final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, sort.equals("accuracy") ? "sim" : "date");
-        return toBlogDocument(page, size, response);
+        return naverResponseMapper.toDomain(response, page, size);
     }
 
     public BlogDocumentsDomain searchFromKakaoFallback(String query, String sort, int page, int size, Throwable t) {
-        final NaverSearchBlogResponse response = naverRestAPIRepository.searchBlog(query, size, (page - 1) * size + 1, sort.equals("accuracy") ? "sim" : "date");
-        return toBlogDocument(page, size, response);
+        return searchFromNaverWithNoFallback(query, sort, page, size);
     }
 
-    @Transactional
-    @Override
-    public void incrSearchKeywordCount(String searchKeyword) {
-        BlogSearchKeywordCountEntity entity = blogSearchKeywordCountRepository.findBySearchKeyword(searchKeyword);
+    @Mapper(config = MapstructMapperConfig.class,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = {KakaoDocumentMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+    public interface KakaoResponseMapper {
 
-        if (entity != null) {
-            entity.setSearchCount(entity.getSearchCount() + 1);
-        } else {
-            entity = new BlogSearchKeywordCountEntity();
-            entity.setSearchKeyword(searchKeyword);
-            entity.setSearchCount(1);
-        }
+        @Mappings({
+            @Mapping(target = "total", source = "response.meta.totalCount"),
+            @Mapping(target = "documents", source = "response.documents")
+        })
+        BlogDocumentsDomain toDomain(KakaoSearchBlogResponse response, int page, int size);
 
-        blogSearchKeywordCountRepository.save(entity);
     }
 
-
-    private BlogDocumentsDomain toBlogDocument(int page, int size, KakaoSearchBlogResponse response) {
-        List<BlogDocumentsDomain.Document> documents = new ArrayList<>();
-        for (KakaoSearchBlogResponse.Document responseDocument : response.getDocuments()) {
-            BlogDocumentsDomain.Document document = new BlogDocumentsDomain.Document();
-            document.setTitle(responseDocument.getTitle());
-            document.setLink(responseDocument.getUrl());
-            document.setDescription(responseDocument.getContents());
-            document.setBlogName(responseDocument.getBlogName());
-            document.setPostDate(responseDocument.getDateTime().toString());
-            documents.add(document);
-        }
-
-        return BlogDocumentsDomain.builder()
-                .total(response.getMeta().getTotalCount())
-                .page(page)
-                .size(size)
-                .documents(documents)
-                .build();
-    }
-
-    private BlogDocumentsDomain toBlogDocument(int page, int size, NaverSearchBlogResponse response) {
-        List<BlogDocumentsDomain.Document> documents = new ArrayList<>();
-        for (NaverSearchBlogResponse.Item item : response.getItems()) {
-            BlogDocumentsDomain.Document document = new BlogDocumentsDomain.Document();
-            document.setTitle(item.getTitle());
-            document.setLink(item.getLink());
-            document.setDescription(item.getDescription());
-            document.setBlogName(item.getBloggerName());
-            document.setPostDate(item.getPostDate());
-            documents.add(document);
-        }
-
-        return BlogDocumentsDomain.builder()
-                .total(response.getTotal())
-                .page(page)
-                .size(size)
-                .documents(documents)
-                .build();
-    }
-
-    @Mapper(config = MapstructMapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-    public interface DomainMapper {
-        SearchKeywordDataProvider.DomainMapper MAPPER = Mappers.getMapper(SearchKeywordDataProvider.DomainMapper.class);
-
-        SearchKeywordCountDomain toDomain(BlogSearchKeywordCountEntity entity);
-        List<SearchKeywordCountDomain> toDomainList(List<BlogSearchKeywordCountEntity> entities);
-    }
-
-    /*
     @Mapper(config = MapstructMapperConfig.class,
             unmappedTargetPolicy = ReportingPolicy.IGNORE)
     public interface KakaoDocumentMapper {
 
         @Mappings({
-                @Mapping(source = "url", target = "link"),
-                @Mapping(source = "contents", target = "description"),
-                @Mapping(source = "dateTime", target = "postDate")
+                @Mapping(target = "link", source = "url"),
+                @Mapping(target = "description", source = "contents"),
+                @Mapping(target = "postDate", source = "dateTime", dateFormat = "yyyy-MM-dd HH:mm:ss")
         })
-        BlogDocuments.Document toBlogDocument(KakaoSearchBlogResponse.Document document);
+        BlogDocumentsDomain.Document toDocument(KakaoSearchBlogResponse.Document document);
 
     }
 
     @Mapper(config = MapstructMapperConfig.class,
-            unmappedTargetPolicy = ReportingPolicy.IGNORE,
-            uses = {KakaoDocumentMapper.class},
-            injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-    public interface KakaoResponseMapper {
-        KakaoResponseMapper MAPPER = Mappers.getMapper(KakaoResponseMapper.class);
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = {NaverDocumentMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+    public interface NaverResponseMapper {
 
         @Mappings({
-                @Mapping(source = "meta.totalCount", target = "total"),
-                @Mapping(source = "meta.isEnd", target = "isEnd"),
-                @Mapping(source = "documents", target = "documents")
+            @Mapping(target = "total", source = "response.total"),
+            @Mapping(target = "documents", source = "response.items")
         })
-        BlogDocuments toBlogDocuments(KakaoSearchBlogResponse kakaoSearchBlogResponse);
-    }
-     */
+        BlogDocumentsDomain toDomain(NaverSearchBlogResponse response, int page, int size);
 
+    }
+
+    @Mapper(config = MapstructMapperConfig.class,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
+    public interface NaverDocumentMapper {
+
+        @Mappings({
+            @Mapping(target = "blogName", source = "bloggerName"),
+            @Mapping(target = "postDate", source = "postDate", dateFormat = "yyyy-MM-dd HH:mm:ss")
+        })
+        BlogDocumentsDomain.Document toDocument(NaverSearchBlogResponse.Item item);
+
+    }
 
 }

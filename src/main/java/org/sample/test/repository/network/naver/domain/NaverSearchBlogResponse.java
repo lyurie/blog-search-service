@@ -2,14 +2,15 @@ package org.sample.test.repository.network.naver.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Builder
 public class NaverSearchBlogResponse {
 
     private Date lastBuildDate;
@@ -22,9 +23,8 @@ public class NaverSearchBlogResponse {
 
     private List<Item> items;
 
-
-    @NoArgsConstructor
-    @Data
+    @Getter
+    @Builder
     public static class Item {
 
         private String title;
@@ -42,7 +42,7 @@ public class NaverSearchBlogResponse {
         @JsonProperty("postdate")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE )
         @JsonFormat(pattern = "yyyyMMdd")
-        private String postDate;
+        private Date postDate;
 
     }
 

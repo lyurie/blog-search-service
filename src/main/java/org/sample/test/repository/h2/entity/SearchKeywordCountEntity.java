@@ -5,9 +5,9 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Data
-@Table(name = "BLOG_SEARCH_KEYWORD_COUNT")
+@Table(name = "SEARCH_KEYWORD_COUNT")
 @Entity
-public class BlogSearchKeywordCountEntity {
+public class SearchKeywordCountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -35,6 +35,10 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
-
-
-
+external:
+  rest-api:
+    kakao:
+      authorization: KakaoAK 0754d4ffa3d9a240b379fe1a1307a679
+    naver:
+      client-id: ITUaf4f6C5Q_s5sR10PQ
+      client-secret: gQtx9c66Qg

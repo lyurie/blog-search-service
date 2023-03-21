@@ -8,9 +8,13 @@ import lombok.Data;
 public class BlogSearchRequest {
 
     private String query;
+
     private String sort;
+
     private int page;
+
     private int size;
+
     private String target;
 
 }

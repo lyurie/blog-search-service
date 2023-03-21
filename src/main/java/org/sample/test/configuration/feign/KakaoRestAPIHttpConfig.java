@@ -1,17 +1,19 @@
 package org.sample.test.configuration.feign;
 
 import feign.RequestInterceptor;
-import feign.auth.BasicAuthRequestInterceptor;
-import org.springframework.cloud.openfeign.FeignFormatterRegistrar;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
+import org.springframework.http.HttpHeaders;
 
 public class KakaoRestAPIHttpConfig {
+
+    @Value("${external.rest-api.kakao.authorization}")
+    private String authorizationHeader;
 
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
-          requestTemplate.header("Authorization", "KakaoAK 0754d4ffa3d9a240b379fe1a1307a679" );
+          requestTemplate.header(HttpHeaders.AUTHORIZATION, authorizationHeader);
         };
     }
 

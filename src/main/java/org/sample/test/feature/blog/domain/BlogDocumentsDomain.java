@@ -1,13 +1,14 @@
 package org.sample.test.feature.blog.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
+import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
 @Builder
 public class BlogDocumentsDomain {
 
@@ -19,16 +20,22 @@ public class BlogDocumentsDomain {
 
     private List<Document> documents;
 
-    @NoArgsConstructor
-    @Data
+    @Getter
+    @Builder
     public static class Document {
+
         private String title;
+
         private String link;
+
         private String description;
+
         @JsonProperty("blog_name")
         private String blogName;
+
         @JsonProperty("post_date")
         private String postDate;
+
     }
 
 }
