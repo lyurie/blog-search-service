@@ -122,7 +122,7 @@ Content-Type: application/json
 | documents[].link | string | 블로그 글 URL|
 | documents[].description | string | 블로그 글 요약|
 | documents[].blog_name | string | 블로그의 이름|
-| documents[].post_date | datetime | 블로그 글 작성 시간 yyyyMMdd|
+| documents[].post_date | datetime | 블로그 글 작성 시간 yyyy-MM-dd HH:mm:ss|
 
 [2] 인기 검색어 조회 API - GET /top-n-search-keywords
 * CURL example
