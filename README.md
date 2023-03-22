@@ -13,9 +13,7 @@
 ---
 * `블로그 검색 서비스` 를 위한 Server Application 구현
 1. [블로그 검색](#1-블로그-검색-api)
-    * 검색어 조회 (Search Keyowrd)
-    * 정렬 (Sort)
-    * 커서 기반 페이지네이션 (Cursor based Pagination)
+    * 검색어 조회 (Search Query)
     
 2. [인기 검색어 조회](#2-인기-검색어-조회-api)
     * 조회할 인기 검색어 개수 (Number of search results)
@@ -29,7 +27,7 @@
 * 어플리케이션 구동 :
    * 다운로드 : 
    ```shell
-   $ wget https://github.com/lyurie/blog-search-service/blog-search-service.jar
+   $ wget https://drive.google.com/file/d/1ZymRJUDyZ16qN8BwdE5F7pL6EVwXDUba/view?usp=share_link
    ```
    * 실행 : 
    ```shell
@@ -56,14 +54,14 @@
 > | sort | string | X | 정렬 기준 (accuracy:정확도순 / recency:최신순, default=accuracy) |
 > | page | integer | X | 결과 페이지 (1 to 5, default=1)|
 > | size | integer | X | 한 페이지에 보여질 문서 수 (1 to 50, default=10)|
-> | target | string | X | 검색 소스 (kakao / naver, default=kakao, naver 우선 순위를 가진다 (kakao 장애 시에만 naver 로 검색 소스 변경))|
+> | target | string | X | 검색 소스 (kakao / naver, default=kakao, naver 우선 순위를 가진다 (kakao 조회 실패 시에만 naver 로 검색 소스 변경))|
 
 ##### Responses
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
 > | `200`         | `application/json` 				        | 하단 `Example Response` 참조                                          |
-> | `400`         | `application/json`                | `{"code":"400","message":"Bad Request"}`                            |
-> | `500`         | `application/json`                | `{"code":"400","message":"Bad Request"}`                            |
+> | `400`         | `application/json`                | `{"error":{"code":2,"name":"INVALID_REQUEST","message":"request parameter query is required"}}` |
+> | `500`         | `application/json`                | `{"error":{"code":1,"name":"INTERNAL_SERVER_ERROR","message":"Internal Server Error"}}` |
 
 ##### Example cURL
 > ```javascript
@@ -173,12 +171,12 @@
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
 > | `200`         | `application/json` 				        | 하단 `Example Response` 참조                                          |
-> | `400`         | `application/json`                | `{"code":"400","message":"Bad Request"}`                            |
-> | `500`         | `application/json`                | None                                                                |
+> | `400`         | `application/json`                | `{"error":{"code":2,"name":"INVALID_REQUEST","message":"size should be min 1, max 10"}}` |
+> | `500`         | `application/json`                | `{"error":{"code":1,"name":"INTERNAL_SERVER_ERROR","message":"Internal Server Error"}}` |
 
 ##### Example cURL
 > ```javascirpt
->  curl 'http://localhost/search-blog?query=keyword' -i -X GET
+>  curl 'http://localhost/top-n-search-keywords' -i -X GET
 > ```
 
 ##### Example Response
@@ -238,10 +236,11 @@
 ---
 > | 라이브러리 | 용도                                                                                                             |
 > | -------- |----------------------------------------------------------------------------------------------------------------|
-> | io.github.resilience4j:resilience4j-spring-boot2 | Circuit Breaker 기능 사용을 위해 선택|
-> | com.github.ben-manes.caffeine:caffeine | |
-> | com.h2database:h2 | |
-> | org.mapstruct:mapstruct | |
+> | org.springframework.cloud:spring-cloud-starter-openfeign | 선언적 http client 사용을 위해 선택 |
+> | io.github.resilience4j:resilience4j-spring-boot2 | Circuit Breaker 기능 사용을 위해 선택 |
+> | com.github.ben-manes.caffeine:caffeine | 로컬 캐시 적용을 위해 선택 |
+> | com.h2database:h2 | 인메모리 데이터베이스 사용을 위해 선택 |
+> | org.mapstruct:mapstruct | 객체 매핑 위임을 위해 선택 |
 
 #
 ### Misc
