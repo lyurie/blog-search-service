@@ -26,9 +26,7 @@
 
 * 어플리케이션 구동 :
    * 다운로드 : 
-   ```shell
-   https://drive.google.com/file/d/1ZymRJUDyZ16qN8BwdE5F7pL6EVwXDUba/view?usp=share_link
-   ```
+      * [blog-search-service.jar](https://drive.google.com/file/d/1ZymRJUDyZ16qN8BwdE5F7pL6EVwXDUba/view?usp=share_link) 
    * 실행 : 
    ```shell
    $ java -jar blog-search-service.jar
