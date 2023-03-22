@@ -27,7 +27,7 @@
 * 어플리케이션 구동 :
    * 다운로드 : 
    ```shell
-   $ wget https://drive.google.com/file/d/1ZymRJUDyZ16qN8BwdE5F7pL6EVwXDUba/view?usp=share_link
+   https://drive.google.com/file/d/1ZymRJUDyZ16qN8BwdE5F7pL6EVwXDUba/view?usp=share_link
    ```
    * 실행 : 
    ```shell
