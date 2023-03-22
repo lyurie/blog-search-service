@@ -2,15 +2,16 @@ package org.sample.test.repository.network.naver.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
 
+@Builder(toBuilder = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
-@Builder
 public class NaverSearchBlogResponse {
 
     private Date lastBuildDate;
@@ -23,8 +24,10 @@ public class NaverSearchBlogResponse {
 
     private List<Item> items;
 
+    @Builder(toBuilder = true)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
     @Getter
-    @Builder
     public static class Item {
 
         private String title;

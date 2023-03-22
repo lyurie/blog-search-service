@@ -67,7 +67,6 @@ resilience4j:
         failureRateThreshold: 50
         eventConsumerBufferSize: 10
         recordExceptions:
-#          - feign.RetryableException
           - feign.FeignException
           - java.util.concurrent.TimeoutException
           - java.io.IOException

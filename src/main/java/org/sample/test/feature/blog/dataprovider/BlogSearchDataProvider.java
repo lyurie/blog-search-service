@@ -98,7 +98,7 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
 
     @Mapper(config = MapstructMapperConfig.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses = {NaverDocumentMapper.class},
+        uses = {NaverItemMapper.class},
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
     public interface NaverResponseMapper {
 
@@ -112,7 +112,7 @@ public class BlogSearchDataProvider implements IBlogSearchDataProvider {
 
     @Mapper(config = MapstructMapperConfig.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
-    public interface NaverDocumentMapper {
+    public interface NaverItemMapper {
 
         @Mappings({
             @Mapping(target = "blogName", source = "bloggerName"),

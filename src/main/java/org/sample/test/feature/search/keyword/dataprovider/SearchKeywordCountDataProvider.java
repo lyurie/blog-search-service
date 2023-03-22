@@ -21,7 +21,7 @@ public class SearchKeywordCountDataProvider implements ISearchKeywordCountDataPr
 
     private final SearchKeywordCountRepository searchKeywordCountRepository;
 
-    private final DomainMapper domainMapper;
+    private final EntityMapper entityMapper;
 
     private static final int MIN_SEARCH_COUNT = 0; // search count cardinality 를 높이기 위해 매우 낮은 카운팅 숫자는 제외하도록 함
     private static final String SORT_BY_SEARCH_COUNT = "searchCount";
@@ -32,11 +32,11 @@ public class SearchKeywordCountDataProvider implements ISearchKeywordCountDataPr
         final List<SearchKeywordCountEntity> entities = searchKeywordCountRepository.findBySearchCountGreaterThan(
             MIN_SEARCH_COUNT, PageRequest.of(0, size, Sort.by(SORT_BY_SEARCH_COUNT).descending()));
 
-        return domainMapper.toDomainList(entities);
+        return entityMapper.toDomainList(entities);
     }
 
     @Mapper(config = MapstructMapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-    public interface DomainMapper {
+    public interface EntityMapper {
 
         SearchKeywordCountDomain toDomain(SearchKeywordCountEntity entity);
 

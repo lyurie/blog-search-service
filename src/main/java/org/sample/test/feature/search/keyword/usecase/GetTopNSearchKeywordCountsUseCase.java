@@ -1,5 +1,6 @@
 package org.sample.test.feature.search.keyword.usecase;
 
+import feign.ResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -17,7 +18,7 @@ public class GetTopNSearchKeywordCountsUseCase implements GetTopNSearchKeywordCo
 
   private final ISearchKeywordCountDataProvider searchKeywordCountDataProvider;
 
-  private final ResponseMapper responseMapper;
+  private final DomainMapper domainMapper;
 
   @Override
   public List<GetTopNSearchKeywordCountsResponse> execute(GetTopNSearchKeywordCountsRequest request) {
@@ -31,11 +32,11 @@ public class GetTopNSearchKeywordCountsUseCase implements GetTopNSearchKeywordCo
     final List<SearchKeywordCountDomain> domains = searchKeywordCountDataProvider.getTopNSearchKeywordCounts(size);
 
     // 3. make results
-    return responseMapper.toResponses(domains);
+    return domainMapper.toResponses(domains);
   }
 
   @Mapper(config = MapstructMapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-  public interface ResponseMapper {
+  public interface DomainMapper {
 
     List<GetTopNSearchKeywordCountsResponse> toResponses(List<SearchKeywordCountDomain> domains);
 

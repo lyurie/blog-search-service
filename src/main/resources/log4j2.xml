@@ -61,8 +61,8 @@
     <RollingFile name="AppErrorLogToRollingFile"
                  append="true"
                  bufferSize="8192"
-                 fileName="./logs/app-errorCode.log"
-                 filePattern="./logs/app-errorCode-%d{yyyyMMdd}.log">
+                 fileName="./logs/app-error.log"
+                 filePattern="./logs/app-error-%d{yyyyMMdd}.log">
       <JsonLayout compact="true" eventEol="true" stacktraceAsString="true" includeTimeMillis="true">
         <KeyValuePair key="dt" value="$${date:yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}"/>
       </JsonLayout>

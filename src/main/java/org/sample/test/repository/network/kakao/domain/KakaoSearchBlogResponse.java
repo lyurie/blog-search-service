@@ -2,23 +2,25 @@ package org.sample.test.repository.network.kakao.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
 
-
+@Builder(toBuilder = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
-@Builder
 public class KakaoSearchBlogResponse {
 
     private Meta meta;
     private List<Document> documents;
 
+    @Builder(toBuilder = true)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
     @Getter
-    @Builder
     public static class Meta {
         @JsonProperty("total_count")
         private Integer totalCount;
@@ -30,8 +32,10 @@ public class KakaoSearchBlogResponse {
         private Boolean isEnd;
     }
 
+    @Builder(toBuilder = true)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
     @Getter
-    @Builder
     public static class Document {
 
         private String title;
